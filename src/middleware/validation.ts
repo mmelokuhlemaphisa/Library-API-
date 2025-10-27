@@ -1,6 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import { findAuthorById, books } from "../data/index";
-import { ValidationError, NotFoundError, ConflictError, BadRequestError } from "../errors/AppError";
+import {
+  ValidationError,
+  NotFoundError,
+  ConflictError,
+  BadRequestError,
+} from "../errors/AppError";
 
 // Validation middleware for book creation and updates
 export const validateBook = (isUpdate: boolean = false) => {
@@ -10,7 +15,9 @@ export const validateBook = (isUpdate: boolean = false) => {
 
       // Check if all required fields are present
       if (!title || !isbn || !publishedYear || !authorId) {
-        throw new ValidationError("All fields (title, isbn, publishedYear, authorId) are required");
+        throw new ValidationError(
+          "All fields (title, isbn, publishedYear, authorId) are required"
+        );
       }
 
       // Validate title
@@ -27,7 +34,9 @@ export const validateBook = (isUpdate: boolean = false) => {
       const isbnPattern =
         /^(?:\d{9}[\dX]|\d{13}|\d{1,5}-\d{1,7}-\d{1,6}-[\dX]|\d{3}-\d{1,5}-\d{1,7}-\d{1,6}-[\dX])$/;
       if (!isbnPattern.test(isbn.replace(/\s/g, ""))) {
-        throw new ValidationError("ISBN must be a valid format (10 or 13 digits, optionally with hyphens)");
+        throw new ValidationError(
+          "ISBN must be a valid format (10 or 13 digits, optionally with hyphens)"
+        );
       }
 
       // Validate publishedYear
@@ -39,7 +48,9 @@ export const validateBook = (isUpdate: boolean = false) => {
       }
 
       if (publishedYear < 1000 || publishedYear > new Date().getFullYear()) {
-        throw new ValidationError(`Published year must be between 1000 and ${new Date().getFullYear()}`);
+        throw new ValidationError(
+          `Published year must be between 1000 and ${new Date().getFullYear()}`
+        );
       }
 
       // Validate authorId
@@ -91,7 +102,9 @@ export const validateBookId = (
     const id = parseInt(req.params.id);
 
     if (isNaN(id) || !Number.isInteger(id) || id <= 0) {
-      throw new BadRequestError("Invalid book ID. ID must be a positive integer");
+      throw new BadRequestError(
+        "Invalid book ID. ID must be a positive integer"
+      );
     }
 
     // Store parsed ID for use in route handlers
@@ -112,7 +125,9 @@ export const validateAuthorId = (
     const authorId = parseInt(req.params.authorId);
 
     if (isNaN(authorId) || !Number.isInteger(authorId) || authorId <= 0) {
-      throw new BadRequestError("Invalid author ID. ID must be a positive integer");
+      throw new BadRequestError(
+        "Invalid author ID. ID must be a positive integer"
+      );
     }
 
     // Store parsed ID for use in route handlers

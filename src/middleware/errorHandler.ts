@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
-import { AppError } from '../errors/AppError';
+import { Request, Response, NextFunction } from "express";
+import { AppError } from "../errors/AppError";
 
 interface ErrorResponse {
   success: false;
@@ -23,26 +23,26 @@ export const errorHandler = (
 ): void => {
   // Default error values
   let statusCode = 500;
-  let message = 'Internal Server Error';
-  let errorCode = 'INTERNAL_SERVER_ERROR';
+  let message = "Internal Server Error";
+  let errorCode = "INTERNAL_SERVER_ERROR";
 
   // Handle different error types
   if (err instanceof AppError) {
     statusCode = err.statusCode;
     message = err.message;
-    errorCode = err.errorCode || 'APP_ERROR';
-  } else if (err.name === 'ValidationError') {
+    errorCode = err.errorCode || "APP_ERROR";
+  } else if (err.name === "ValidationError") {
     statusCode = 400;
     message = err.message;
-    errorCode = 'VALIDATION_ERROR';
-  } else if (err.name === 'CastError') {
+    errorCode = "VALIDATION_ERROR";
+  } else if (err.name === "CastError") {
     statusCode = 400;
-    message = 'Invalid ID format';
-    errorCode = 'INVALID_ID';
-  } else if (err.name === 'SyntaxError' && 'body' in err) {
+    message = "Invalid ID format";
+    errorCode = "INVALID_ID";
+  } else if (err.name === "SyntaxError" && "body" in err) {
     statusCode = 400;
-    message = 'Invalid JSON payload';
-    errorCode = 'INVALID_JSON';
+    message = "Invalid JSON payload";
+    errorCode = "INVALID_JSON";
   }
 
   // Log error details (in production, you'd use a proper logger)
@@ -52,7 +52,7 @@ export const errorHandler = (
     url: req.originalUrl,
     method: req.method,
     ip: req.ip,
-    userAgent: req.get('User-Agent')
+    userAgent: req.get("User-Agent"),
   });
 
   // Create error response
@@ -64,12 +64,12 @@ export const errorHandler = (
       errorCode,
       timestamp: new Date().toISOString(),
       path: req.originalUrl,
-      method: req.method
-    }
+      method: req.method,
+    },
   };
 
   // Include stack trace in development environment
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV === "development") {
     errorResponse.error.stack = err.stack;
   }
 
@@ -85,7 +85,7 @@ export const notFoundHandler = (
   const error = new AppError(
     `Route ${req.originalUrl} not found`,
     404,
-    'ROUTE_NOT_FOUND'
+    "ROUTE_NOT_FOUND"
   );
   next(error);
 };
