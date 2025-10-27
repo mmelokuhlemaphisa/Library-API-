@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { books, getNextBookId, findAuthorById } from '../data/index';
 import { Book } from '../models/Book';
+import { validateBook, validateBookId, validateAuthorId } from '../middleware/validation';
 
 const router = Router();
 
@@ -21,16 +22,9 @@ router.get('/', (req: Request, res: Response) => {
 });
 
 // READ SINGLE - GET /api/books/:id
-router.get('/:id', (req: Request, res: Response) => {
+router.get('/:id', validateBookId, (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
-
-    // Validate ID is a number
-    if (isNaN(id)) {
-      return res.status(400).json({
-        error: 'Invalid book ID. ID must be a number'
-      });
-    }
 
     const book = books.find(b => b.id === id);
 
@@ -54,45 +48,15 @@ router.get('/:id', (req: Request, res: Response) => {
 });
 
 // CREATE - POST /api/books
-router.post('/', (req: Request, res: Response) => {
+router.post('/', validateBook(false), (req: Request, res: Response) => {
   try {
     const { title, isbn, publishedYear, authorId } = req.body;
 
-    // Validation
-    if (!title || !isbn || !publishedYear || !authorId) {
-      return res.status(400).json({
-        error: 'All fields (title, isbn, publishedYear, authorId) are required'
-      });
-    }
-
-    // Validate publishedYear is a number
-    if (typeof publishedYear !== 'number' || publishedYear < 1000 || publishedYear > new Date().getFullYear()) {
-      return res.status(400).json({
-        error: 'Published year must be a valid year'
-      });
-    }
-
-    // Validate authorId exists
-    const author = findAuthorById(authorId);
-    if (!author) {
-      return res.status(400).json({
-        error: 'Author not found'
-      });
-    }
-
-    // Check if ISBN already exists
-    const existingBook = books.find(book => book.isbn === isbn);
-    if (existingBook) {
-      return res.status(400).json({
-        error: 'Book with this ISBN already exists'
-      });
-    }
-
-    // Create new book
+    // Create new book (validation already done by middleware)
     const newBook: Book = {
       id: getNextBookId(),
-      title: title.trim(),
-      isbn: isbn.trim(),
+      title,
+      isbn,
       publishedYear,
       authorId
     };
@@ -113,16 +77,9 @@ router.post('/', (req: Request, res: Response) => {
 });
 
 // UPDATE - PUT /api/books/:id
-router.put('/:id', (req: Request, res: Response) => {
+router.put('/:id', validateBookId, validateBook(true), (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
-
-    // Validate ID is a number
-    if (isNaN(id)) {
-      return res.status(400).json({
-        error: 'Invalid book ID. ID must be a number'
-      });
-    }
 
     const bookIndex = books.findIndex(b => b.id === id);
 
@@ -134,41 +91,11 @@ router.put('/:id', (req: Request, res: Response) => {
 
     const { title, isbn, publishedYear, authorId } = req.body;
 
-    // Validation
-    if (!title || !isbn || !publishedYear || !authorId) {
-      return res.status(400).json({
-        error: 'All fields (title, isbn, publishedYear, authorId) are required'
-      });
-    }
-
-    // Validate publishedYear is a number
-    if (typeof publishedYear !== 'number' || publishedYear < 1000 || publishedYear > new Date().getFullYear()) {
-      return res.status(400).json({
-        error: 'Published year must be a valid year'
-      });
-    }
-
-    // Validate authorId exists
-    const author = findAuthorById(authorId);
-    if (!author) {
-      return res.status(400).json({
-        error: 'Author not found'
-      });
-    }
-
-    // Check if ISBN already exists (excluding current book)
-    const existingBook = books.find(book => book.isbn === isbn && book.id !== id);
-    if (existingBook) {
-      return res.status(400).json({
-        error: 'Book with this ISBN already exists'
-      });
-    }
-
-    // Update book
+    // Update book (validation already done by middleware)
     books[bookIndex] = {
       id: id, // Keep original ID
-      title: title.trim(),
-      isbn: isbn.trim(),
+      title,
+      isbn,
       publishedYear,
       authorId
     };
@@ -188,16 +115,9 @@ router.put('/:id', (req: Request, res: Response) => {
 });
 
 // DELETE - DELETE /api/books/:id
-router.delete('/:id', (req: Request, res: Response) => {
+router.delete('/:id', validateBookId, (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
-
-    // Validate ID is a number
-    if (isNaN(id)) {
-      return res.status(400).json({
-        error: 'Invalid book ID. ID must be a number'
-      });
-    }
 
     const bookIndex = books.findIndex(b => b.id === id);
 
@@ -228,16 +148,9 @@ router.delete('/:id', (req: Request, res: Response) => {
 });
 
 // GET BOOKS BY AUTHOR - GET /api/books/author/:authorId
-router.get('/author/:authorId', (req: Request, res: Response) => {
+router.get('/author/:authorId', validateAuthorId, (req: Request, res: Response) => {
   try {
     const authorId = parseInt(req.params.authorId);
-
-    // Validate authorId is a number
-    if (isNaN(authorId)) {
-      return res.status(400).json({
-        error: 'Invalid author ID. ID must be a number'
-      });
-    }
 
     // Validate author exists
     const author = findAuthorById(authorId);
