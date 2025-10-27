@@ -141,5 +141,26 @@ router.put("/:id", (req: Request, res: Response) => {
 });
 
 
+// DELETE /authors/:id - Delete author
+router.delete("/:id", (req: Request, res: Response) => {
+  const id = parseInt(req.params.id);
+  const authorIndex = authors.findIndex((a) => a.id === id);
+
+  if (authorIndex === -1) {
+    return res.status(404).json({
+      success: false,
+      message: "Author not found",
+    });
+  }
+
+  const deletedAuthor = authors[authorIndex];
+  authors.splice(authorIndex, 1);
+
+  res.status(200).json({
+    success: true,
+    data: deletedAuthor,
+    message: "Author deleted successfully",
+  });
+});
 
 export default router;
