@@ -20,6 +20,39 @@ router.get('/', (req: Request, res: Response) => {
   }
 });
 
+// READ SINGLE - GET /api/books/:id
+router.get('/:id', (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.id);
+
+    // Validate ID is a number
+    if (isNaN(id)) {
+      return res.status(400).json({
+        error: 'Invalid book ID. ID must be a number'
+      });
+    }
+
+    const book = books.find(b => b.id === id);
+
+    if (!book) {
+      return res.status(404).json({
+        error: 'Book not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: book
+    });
+
+  } catch (error) {
+    console.error('Error fetching book:', error);
+    res.status(500).json({
+      error: 'Internal server error'
+    });
+  }
+});
+
 // CREATE - POST /api/books
 router.post('/', (req: Request, res: Response) => {
   try {
