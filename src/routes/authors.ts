@@ -94,4 +94,52 @@ router.post("/", (req: Request, res: Response) => {
   });
 }); 
 
+
+// PUT /authors/:id - Update author
+router.put("/:id", (req: Request, res: Response) => {
+  const id = parseInt(req.params.id);
+  const { name, email, bio } = req.body;
+
+  const authorIndex = authors.findIndex((a) => a.id === id);
+
+  if (authorIndex === -1) {
+    return res.status(404).json({
+      success: false,
+      message: "Author not found",
+    });
+  }
+
+  // Basic validation
+  if (!name || !email || !bio) {
+    return res.status(400).json({
+      success: false,
+      message: "Name, email, and bio are required",
+    });
+  }
+
+  // Check if email already exists for another author
+  const existingAuthor = authors.find((a) => a.email === email && a.id !== id);
+  if (existingAuthor) {
+    return res.status(400).json({
+      success: false,
+      message: "Another author with this email already exists",
+    });
+  }
+
+  authors[authorIndex] = {
+    id,
+    name,
+    email,
+    bio,
+  };
+
+  res.status(200).json({
+    success: true,
+    data: authors[authorIndex],
+    message: "Author updated successfully",
+  });
+});
+
+
+
 export default router;
