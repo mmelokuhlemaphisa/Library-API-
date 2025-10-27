@@ -1,5 +1,5 @@
-import { Author } from '../models/Author';
-import { Book } from '../models/Book';
+import { Author } from "../models/Author";
+import { Book } from "../models/Book";
 
 // In-memory authors array with sample data
 export let authors: Author[] = [
