@@ -1,0 +1,34 @@
+{
+  "name": "library-api-",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node src/server.ts",
+    "dev": "nodemon --exec ts-node src/server.ts"
+  },
+
+  
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mmelokuhlemaphisa/Library-API-.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mmelokuhlemaphisa/Library-API-/issues"
+  },
+  "homepage": "https://github.com/mmelokuhlemaphisa/Library-API-#readme",
+  "dependencies": {
+    "@types/express": "^5.0.4",
+    "@types/node": "^24.9.1",
+    "body-parser": "^2.2.0",
+    "express": "^5.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
