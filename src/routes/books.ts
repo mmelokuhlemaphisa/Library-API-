@@ -187,4 +187,44 @@ router.put('/:id', (req: Request, res: Response) => {
   }
 });
 
+// DELETE - DELETE /api/books/:id
+router.delete('/:id', (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.id);
+
+    // Validate ID is a number
+    if (isNaN(id)) {
+      return res.status(400).json({
+        error: 'Invalid book ID. ID must be a number'
+      });
+    }
+
+    const bookIndex = books.findIndex(b => b.id === id);
+
+    if (bookIndex === -1) {
+      return res.status(404).json({
+        error: 'Book not found'
+      });
+    }
+
+    // Store book details before deletion for response
+    const deletedBook = books[bookIndex];
+
+    // Remove book from array
+    books.splice(bookIndex, 1);
+
+    res.status(200).json({
+      success: true,
+      message: 'Book deleted successfully',
+      data: deletedBook
+    });
+
+  } catch (error) {
+    console.error('Error deleting book:', error);
+    res.status(500).json({
+      error: 'Internal server error'
+    });
+  }
+});
+
 export default router;

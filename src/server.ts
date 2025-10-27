@@ -33,7 +33,8 @@ app.get('/', (req: Request, res: Response) => {
         'GET /api/books': 'Get all books',
         'GET /api/books/:id': 'Get single book',
         'POST /api/books': 'Create new book',
-        'PUT /api/books/:id': 'Update book'
+        'PUT /api/books/:id': 'Update book',
+        'DELETE /api/books/:id': 'Delete book'
       }
     }
   });
