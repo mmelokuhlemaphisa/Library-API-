@@ -1,3 +1,5 @@
+readme
+
 # Library API 📚
 
 A RESTful API for managing a library system with authors and books. Built with TypeScript, Express.js, and comprehensive error handling.
@@ -21,27 +23,25 @@ Server runs on: `http://localhost:3000`
 
 ### Authors
 
-| Method | Endpoint             | Description             | Query Parameters |
-| ------ | -------------------- | ----------------------- | ---------------- |
-| POST   | `/authors`           | Create new author       | -                |
-| GET    | `/authors`           | List all authors        | -                |
-| GET    | `/authors/:id`       | Get author by ID        | -                |
-| PUT    | `/authors/:id`       | Update author           | -                |
-| DELETE | `/authors/:id`       | Delete author           | -                |
-| GET    | `/authors/:id/books` | List books by an author | -                |
+| Method | Endpoint             | Description        | Query Parameters                                               |
+| ------ | -------------------- | ------------------ | -------------------------------------------------------------- |
+| GET    | `/authors`           | Get all authors    | `?search=`, `?sort=`, `?order=`, `?page=`, `?limit=`           |
+| GET    | `/authors/:id`       | Get single author  | -                                                              |
+| GET    | `/authors/:id/books` | Get author's books | `?search=`, `?sort=`, `?order=`, `?page=`, `?limit=`, `?year=` |
+| POST   | `/authors`           | Create new author  | -                                                              |
+| PUT    | `/authors/:id`       | Update author      | -                                                              |
+| DELETE | `/authors/:id`       | Delete author      | -                                                              |
 
 ### Books
 
-| Method | Endpoint        | Description         | Query Parameters                                                                                                                                 |
-| ------ | --------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| POST   | `/books`        | Create new book     | -                                                                                                                                                |
-| GET    | `/books`        | List all books      | `?sortBy=`, `?sortOrder=`, `?page=`, `?limit=`                                                                                                   |
-| GET    | `/books/:id`    | Get book by ID      | -                                                                                                                                                |
-| PUT    | `/books/:id`    | Update book         | -                                                                                                                                                |
-| DELETE | `/books/:id`    | Delete book         | -                                                                                                                                                |
-| GET    | `/books/search` | Search books        | `?query=`, `?fields=`, `?page=`, `?limit=`                                                                                                       |
-| GET    | `/books/filter` | Filter books        | `?authorId=`, `?publishedYear=`, `?publishedYearFrom=`, `?publishedYearTo=`, `?title=`, `?isbn=`, `?sortBy=`, `?sortOrder=`, `?page=`, `?limit=` |
-| GET    | `/books/stats`  | Get book statistics | -                                                                                                                                                |
+| Method | Endpoint                  | Description         | Query Parameters                                                             |
+| ------ | ------------------------- | ------------------- | ---------------------------------------------------------------------------- |
+| GET    | `/books`                  | Get all books       | `?search=`, `?sort=`, `?order=`, `?page=`, `?limit=`, `?year=`, `?authorId=` |
+| GET    | `/books/:id`              | Get single book     | -                                                                            |
+| GET    | `/books/author/:authorId` | Get books by author | `?search=`, `?sort=`, `?order=`, `?page=`, `?limit=`, `?year=`               |
+| POST   | `/books`                  | Create new book     | -                                                                            |
+| PUT    | `/books/:id`              | Update book         | -                                                                            |
+| DELETE | `/books/:id`              | Delete book         | -                                                                            |
 
 ## 📖 Usage Examples
 
@@ -75,47 +75,30 @@ Content-Type: application/json
 ### Search Books
 
 ```http
-GET /books/search?query=potter&fields=title,author&page=1&limit=10
+GET /books?search=potter&year=1997&sort=title&page=1&limit=10
 ```
 
-### Filter Books
+### Get Author's Books
 
 ```http
-GET /books/filter?authorId=1&publishedYearFrom=1990&publishedYearTo=2000&sortBy=title&sortOrder=asc
-```
-
-### Get Book Statistics
-
-```http
-GET /books/stats
-```
-
-### List Books by Author
-
-```http
-GET /authors/1/books
+GET /authors/1/books?sort=year&order=desc
 ```
 
 ## 🔍 Query Parameters
 
-### Search (for `/books/search`)
+### Search
 
-- `?query=term` - Search term across titles, authors, and ISBNs
-- `?fields=title,author,isbn` - Specific fields to search (comma-separated)
+- `?search=term` - Search in titles, names, emails, bios
 
-### Filtering (for `/books/filter`)
+### Filtering
 
-- `?authorId=1` - Filter books by author ID
-- `?publishedYear=1997` - Filter books by exact publication year
-- `?publishedYearFrom=1990` - Filter books from this year onwards
-- `?publishedYearTo=2000` - Filter books up to this year
-- `?title=partial` - Filter books with title containing this text
-- `?isbn=exact` - Filter books with exact ISBN match
+- `?year=1997` - Filter books by publication year
+- `?authorId=1` - Filter books by author
 
 ### Sorting
 
-- `?sortBy=title` - Sort by field (id, title, publishedYear, isbn)
-- `?sortOrder=desc` - Sort order (asc/desc, default: asc)
+- `?sort=name` - Sort by field (name, title, year, etc.)
+- `?order=desc` - Sort order (asc/desc, default: asc)
 
 ### Pagination
 
@@ -129,19 +112,19 @@ GET /authors/1/books
 ```json
 {
   "success": true,
-  "message": "Retrieved 5 of 5 books",
   "data": [...],
   "pagination": {
-    "page": 1,
-    "limit": 5,
-    "total": 5,
-    "totalPages": 1,
-    "hasNext": false,
-    "hasPrev": false
+    "currentPage": 1,
+    "totalPages": 3,
+    "totalItems": 25,
+    "itemsPerPage": 10,
+    "hasNextPage": true,
+    "hasPrevPage": false
   },
-  "sort": {
-    "sortBy": "title",
-    "sortOrder": "asc"
+  "query": {
+    "search": "term",
+    "sort": "name",
+    "order": "asc"
   }
 }
 ```
@@ -152,11 +135,10 @@ GET /authors/1/books
 {
   "success": false,
   "error": {
-    "message": "Book with ID 999 not found",
+    "message": "Author not found",
     "statusCode": 404,
-    "errorCode": "NOT_FOUND",
     "timestamp": "2025-10-27T12:00:00.000Z",
-    "path": "/books/999",
+    "path": "/authors/999",
     "method": "GET"
   }
 }
