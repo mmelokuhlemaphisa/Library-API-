@@ -227,4 +227,42 @@ router.delete('/:id', (req: Request, res: Response) => {
   }
 });
 
+// GET BOOKS BY AUTHOR - GET /api/books/author/:authorId
+router.get('/author/:authorId', (req: Request, res: Response) => {
+  try {
+    const authorId = parseInt(req.params.authorId);
+
+    // Validate authorId is a number
+    if (isNaN(authorId)) {
+      return res.status(400).json({
+        error: 'Invalid author ID. ID must be a number'
+      });
+    }
+
+    // Validate author exists
+    const author = findAuthorById(authorId);
+    if (!author) {
+      return res.status(404).json({
+        error: 'Author not found'
+      });
+    }
+
+    // Find books by this author
+    const authorBooks = books.filter(book => book.authorId === authorId);
+
+    res.status(200).json({
+      success: true,
+      author: author.name,
+      count: authorBooks.length,
+      data: authorBooks
+    });
+
+  } catch (error) {
+    console.error('Error fetching books by author:', error);
+    res.status(500).json({
+      error: 'Internal server error'
+    });
+  }
+});
+
 export default router;

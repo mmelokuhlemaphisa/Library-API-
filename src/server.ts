@@ -32,6 +32,7 @@ app.get('/', (req: Request, res: Response) => {
       books: {
         'GET /api/books': 'Get all books',
         'GET /api/books/:id': 'Get single book',
+        'GET /api/books/author/:authorId': 'Get books by author',
         'POST /api/books': 'Create new book',
         'PUT /api/books/:id': 'Update book',
         'DELETE /api/books/:id': 'Delete book'
