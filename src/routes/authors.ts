@@ -57,5 +57,41 @@ router.get("/:id", (req: Request, res: Response) => {
   });
 });
 
+// POST /authors - Create new author
+router.post("/", (req: Request, res: Response) => {
+  const { name, email, bio } = req.body;
+
+  // Basic validation
+  if (!name || !email || !bio) {
+    return res.status(400).json({
+      success: false,
+      message: "Name, email, and bio are required",
+    });
+  }
+
+  // Check if email already exists
+  const existingAuthor = authors.find((a) => a.email === email);
+  if (existingAuthor) {
+    return res.status(400).json({
+      success: false,
+      message: "Author with this email already exists",
+    });
+  }
+
+  const newAuthor: Author = {
+    id: getNextId(),
+    name,
+    email,
+    bio,
+  };
+
+  authors.push(newAuthor);
+
+  res.status(201).json({
+    success: true,
+    data: newAuthor,
+    message: "Author created successfully",
+  });
+}); 
 
 export default router;
