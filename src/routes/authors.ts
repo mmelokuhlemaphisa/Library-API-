@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
 import { Author } from "../models/Author";
+import { books } from "../data/index";
 
 const router = Router();
 
@@ -160,6 +161,38 @@ router.delete("/:id", (req: Request, res: Response) => {
     success: true,
     data: deletedAuthor,
     message: "Author deleted successfully",
+  });
+});
+
+// GET /authors/:id/books - List books by an author
+router.get("/:id/books", (req: Request, res: Response) => {
+  const id = parseInt(req.params.id);
+
+  if (isNaN(id)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid author ID",
+    });
+  }
+
+  const author = authors.find((a) => a.id === id);
+  if (!author) {
+    return res.status(404).json({
+      success: false,
+      message: "Author not found",
+    });
+  }
+
+  const authorBooks = books.filter(book => book.authorId === id);
+
+  res.status(200).json({
+    success: true,
+    author: {
+      id: author.id,
+      name: author.name
+    },
+    count: authorBooks.length,
+    data: authorBooks,
   });
 });
 

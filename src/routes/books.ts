@@ -8,16 +8,16 @@ import {
 } from "../middleware/validation";
 import { NotFoundError } from "../errors/AppError";
 import { asyncHandler } from "../middleware/errorHandler";
-import { 
-  searchBooks, 
-  parsePagination, 
-  paginate, 
+import {
+  searchBooks,
+  parsePagination,
+  paginate,
   SearchParams,
   filterBooks,
   parseBookFilters,
   sortBooks,
   parseSort,
-  getBookStats
+  getBookStats,
 } from "../utils/queryUtils";
 
 const router = Router();
@@ -27,10 +27,10 @@ router.get(
   "/",
   asyncHandler(async (req: Request, res: Response) => {
     // Apply sorting if specified
-    const allowedSortFields = ['id', 'title', 'publishedYear', 'isbn'];
+    const allowedSortFields = ["id", "title", "publishedYear", "isbn"];
     const sortParams = parseSort(req.query, allowedSortFields);
     let sortedBooks = sortBooks(books, sortParams);
-    
+
     // Apply pagination
     const pagination = parsePagination(req.query);
     const paginatedResults = paginate(sortedBooks, pagination);
@@ -39,7 +39,7 @@ router.get(
       success: true,
       message: `Retrieved ${paginatedResults.data.length} of ${books.length} books`,
       sort: sortParams,
-      ...paginatedResults
+      ...paginatedResults,
     });
   })
 );
@@ -49,22 +49,24 @@ router.get(
   "/search",
   asyncHandler(async (req: Request, res: Response) => {
     const { query, fields } = req.query;
-    
-    if (!query || typeof query !== 'string') {
+
+    if (!query || typeof query !== "string") {
       return res.status(400).json({
         success: false,
-        error: 'Search query is required'
+        error: "Search query is required",
       });
     }
 
     const searchParams: SearchParams = {
       query: query.trim(),
-      fields: fields ? (fields as string).split(',') : ['title', 'isbn', 'author']
+      fields: fields
+        ? (fields as string).split(",")
+        : ["title", "isbn", "author"],
     };
 
     // Search books
     const searchResults = searchBooks(books, authors, searchParams);
-    
+
     // Apply pagination
     const pagination = parsePagination(req.query);
     const paginatedResults = paginate(searchResults, pagination);
@@ -72,7 +74,7 @@ router.get(
     res.status(200).json({
       success: true,
       message: `Found ${searchResults.length} books matching "${query}"`,
-      ...paginatedResults
+      ...paginatedResults,
     });
   })
 );
@@ -83,15 +85,15 @@ router.get(
   asyncHandler(async (req: Request, res: Response) => {
     // Parse filter parameters
     const filters = parseBookFilters(req.query);
-    
+
     // Apply filters
     let filteredBooks = filterBooks(books, filters);
-    
+
     // Apply sorting if specified
-    const allowedSortFields = ['id', 'title', 'publishedYear', 'isbn'];
+    const allowedSortFields = ["id", "title", "publishedYear", "isbn"];
     const sortParams = parseSort(req.query, allowedSortFields);
     filteredBooks = sortBooks(filteredBooks, sortParams);
-    
+
     // Apply pagination
     const pagination = parsePagination(req.query);
     const paginatedResults = paginate(filteredBooks, pagination);
@@ -99,14 +101,16 @@ router.get(
     // Build filter description for response
     const filterDescription = Object.entries(filters)
       .map(([key, value]) => `${key}: ${value}`)
-      .join(', ');
+      .join(", ");
 
     res.status(200).json({
       success: true,
-      message: `Found ${filteredBooks.length} books${filterDescription ? ` with filters: ${filterDescription}` : ''}`,
+      message: `Found ${filteredBooks.length} books${
+        filterDescription ? ` with filters: ${filterDescription}` : ""
+      }`,
       filters: filters,
       sort: sortParams,
-      ...paginatedResults
+      ...paginatedResults,
     });
   })
 );
@@ -229,12 +233,12 @@ router.get(
 
     // Find books by this author
     let authorBooks = books.filter((book) => book.authorId === authorId);
-    
+
     // Apply sorting if specified
-    const allowedSortFields = ['id', 'title', 'publishedYear', 'isbn'];
+    const allowedSortFields = ["id", "title", "publishedYear", "isbn"];
     const sortParams = parseSort(req.query, allowedSortFields);
     authorBooks = sortBooks(authorBooks, sortParams);
-    
+
     // Apply pagination
     const pagination = parsePagination(req.query);
     const paginatedResults = paginate(authorBooks, pagination);
@@ -244,10 +248,10 @@ router.get(
       message: `Retrieved ${paginatedResults.data.length} of ${authorBooks.length} books by ${author.name}`,
       author: {
         id: author.id,
-        name: author.name
+        name: author.name,
       },
       sort: sortParams,
-      ...paginatedResults
+      ...paginatedResults,
     });
   })
 );
@@ -257,11 +261,11 @@ router.get(
   "/stats",
   asyncHandler(async (req: Request, res: Response) => {
     const stats = getBookStats(books, authors);
-    
+
     res.status(200).json({
       success: true,
       message: "Book statistics retrieved successfully",
-      data: stats
+      data: stats,
     });
   })
 );
