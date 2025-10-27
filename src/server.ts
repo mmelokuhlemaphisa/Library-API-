@@ -2,6 +2,7 @@ import bodyParser from "body-parser";
 import express, { Express, Request, Response } from "express";
 import { loggerMiddleware } from "./middleware/logger";
 import authorsRouter from "./routes/authors";
+import booksRouter from "./routes/books";
 
 const app: Express = express();
 const PORT = process.env.PORT || 3000;
@@ -12,7 +13,8 @@ app.use(express.json());
 app.use(loggerMiddleware);
 
 // Routes
-app.use('/authors', authorsRouter);
+app.use('/api/authors', authorsRouter);
+app.use('/api/books', booksRouter);
 
 // Root endpoint
 app.get('/', (req: Request, res: Response) => {
@@ -21,11 +23,14 @@ app.get('/', (req: Request, res: Response) => {
     message: 'Welcome to Library API',
     endpoints: {
       authors: {
-        'GET /authors': 'Get all authors',
-        'GET /authors/:id': 'Get single author',
-        'POST /authors': 'Create new author',
-        'PUT /authors/:id': 'Update author',
-        'DELETE /authors/:id': 'Delete author'
+        'GET /api/authors': 'Get all authors',
+        'GET /api/authors/:id': 'Get single author',
+        'POST /api/authors': 'Create new author',
+        'PUT /api/authors/:id': 'Update author',
+        'DELETE /api/authors/:id': 'Delete author'
+      },
+      books: {
+        'POST /api/books': 'Create new book'
       }
     }
   });
