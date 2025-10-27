@@ -4,6 +4,22 @@ import { Book } from '../models/Book';
 
 const router = Router();
 
+// READ ALL - GET /api/books
+router.get('/', (req: Request, res: Response) => {
+  try {
+    res.status(200).json({
+      success: true,
+      count: books.length,
+      data: books
+    });
+  } catch (error) {
+    console.error('Error fetching books:', error);
+    res.status(500).json({
+      error: 'Internal server error'
+    });
+  }
+});
+
 // CREATE - POST /api/books
 router.post('/', (req: Request, res: Response) => {
   try {

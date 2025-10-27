@@ -30,6 +30,7 @@ app.get('/', (req: Request, res: Response) => {
         'DELETE /api/authors/:id': 'Delete author'
       },
       books: {
+        'GET /api/books': 'Get all books',
         'POST /api/books': 'Create new book'
       }
     }
