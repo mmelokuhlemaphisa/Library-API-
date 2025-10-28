@@ -1,4 +1,4 @@
-readme
+<img src="https://socialify.git.ci/mmelokuhlemaphisa/Library-API-/image?language=1&owner=1&name=1&stargazers=1&theme=Light" alt="Library-API-" width="640" height="320" />
 
 # Library API 📚
 
@@ -13,8 +13,6 @@ npm install
 # Start development server
 npm run dev
 
-# Start production server
-npm start
 ```
 
 Server runs on: `http://localhost:3000`
